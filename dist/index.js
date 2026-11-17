@@ -125,7 +125,7 @@ var headingTags = {
 };
 function Card({ media, eyebrow, heading, headingLevel = 2, description, actions, footer, className, children }) {
 	const Heading = headingTags[headingLevel];
-	const hasHead = hasContent(heading) || hasContent(eyebrow) || hasContent(actions);
+	const hasHead = hasContent(heading) || hasContent(eyebrow) || hasContent(description) || hasContent(actions);
 	return /* @__PURE__ */ jsxs("section", {
 		className: cx(text_module_default.text, Card_module_default.card, className),
 		children: [

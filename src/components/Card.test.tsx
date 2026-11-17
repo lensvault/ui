@@ -34,6 +34,11 @@ describe("Card", () => {
     expect(screen.getByText("Updated today")).toBeInTheDocument();
   });
 
+  it("shows a description given without a heading", () => {
+    render(<Card description="Make a video">Body</Card>);
+    expect(screen.getByText("Make a video")).toBeInTheDocument();
+  });
+
   it("leaves out the head when there is nothing to put in it", () => {
     const { container } = render(<Card heading={false}>Only body</Card>);
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
