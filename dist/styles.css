@@ -202,6 +202,11 @@
   font-size: 13px;
 }
 
+.lv-FilePicker-error {
+  color: var(--lv-bad);
+  font-size: 13px;
+}
+
 .lv-FilePicker-file {
   display: flex;
   align-items: center;

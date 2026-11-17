@@ -289,20 +289,63 @@ function Field({ label, hint, error, className, children }) {
 		]
 	});
 }
+// src/components/accepts-file.ts
+function acceptsFile(accept, file) {
+	const patterns = (accept ?? "").split(",").map((pattern) => pattern.trim().toLowerCase()).filter(Boolean);
+	if (patterns.length === 0) return true;
+	const name = file.name.toLowerCase();
+	const type = file.type.toLowerCase();
+	return patterns.some((pattern) => {
+		if (pattern.startsWith(".")) return name.endsWith(pattern);
+		if (pattern.endsWith("/*")) return type.startsWith(pattern.slice(0, -1));
+		return type === pattern;
+	});
+}
 var FilePicker_module_default = {
 	picker: "lv-FilePicker-picker",
 	dragging: "lv-FilePicker-dragging",
 	input: "lv-FilePicker-input",
 	hint: "lv-FilePicker-hint",
+	error: "lv-FilePicker-error",
 	file: "lv-FilePicker-file"
 };
-// src/components/FilePicker.tsx
-function formatFileSize(sizeBytes) {
-	return `${(sizeBytes / 1024).toFixed(2)} KB`;
+// src/components/format-file-size.ts
+var units = [
+	{
+		unit: "gigabyte",
+		sizeBytes: 1e9
+	},
+	{
+		unit: "megabyte",
+		sizeBytes: 1e6
+	},
+	{
+		unit: "kilobyte",
+		sizeBytes: 1e3
+	}
+];
+function formatFileSize(sizeBytes, locale) {
+	const match = units.find(({ sizeBytes: unitBytes }) => sizeBytes >= unitBytes);
+	return new Intl.NumberFormat(locale, {
+		style: "unit",
+		unit: match?.unit ?? "byte",
+		unitDisplay: "short",
+		maximumFractionDigits: match ? 1 : 0
+	}).format(sizeBytes / (match?.sizeBytes ?? 1));
 }
+// src/components/FilePicker.tsx
 function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint }) {
 	const inputRef = useRef(null);
 	const [dragging, setDragging] = useState(false);
+	const [rejection, setRejection] = useState();
+	const choose = (chosen) => {
+		if (chosen && !acceptsFile(accept, chosen)) {
+			setRejection(`${chosen.name} isn't a file this takes. It takes ${accept ?? ""}.`);
+			return;
+		}
+		setRejection(void 0);
+		onChange(chosen);
+	};
 	return /* @__PURE__ */ jsxs("div", {
 		role: "group",
 		"aria-label": buttonText,
@@ -311,14 +354,16 @@ function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint
 			event.preventDefault();
 			setDragging(true);
 		},
-		onDragLeave: () => {
+		onDragLeave: (event) => {
+			const { relatedTarget } = event;
+			if (relatedTarget instanceof Node && event.currentTarget.contains(relatedTarget)) return;
 			setDragging(false);
 		},
 		onDrop: (event) => {
 			event.preventDefault();
 			setDragging(false);
 			const dropped = event.dataTransfer.files[0];
-			if (dropped) onChange(dropped);
+			if (dropped) choose(dropped);
 		},
 		children: [
 			/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx(Button, {
@@ -333,13 +378,18 @@ function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint
 				tabIndex: -1,
 				"aria-hidden": true,
 				onChange: (event) => {
-					onChange(event.target.files?.[0]);
+					choose(event.target.files?.[0]);
 					event.target.value = "";
 				}
 			})] }),
 			hasContent(hint) && /* @__PURE__ */ jsx("span", {
 				className: FilePicker_module_default.hint,
 				children: hint
+			}),
+			rejection !== void 0 && /* @__PURE__ */ jsx("span", {
+				className: FilePicker_module_default.error,
+				role: "alert",
+				children: rejection
 			}),
 			file && /* @__PURE__ */ jsxs("div", {
 				className: FilePicker_module_default.file,
@@ -354,7 +404,7 @@ function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint
 					variant: "inline",
 					"aria-label": `Remove ${file.name}`,
 					onClick: () => {
-						onChange(void 0);
+						choose(void 0);
 					},
 					children: "×"
 				})]
