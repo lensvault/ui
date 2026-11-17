@@ -22,6 +22,11 @@
   font-size: 13px;
 }
 
+.error {
+  color: var(--lv-bad);
+  font-size: 13px;
+}
+
 .file {
   display: flex;
   align-items: center;

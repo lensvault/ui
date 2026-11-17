@@ -52,6 +52,10 @@ It holds the theme tokens and the shared controls (Button, Card, Field, Table an
 
    `vars.accent` is `var(--lv-accent)`, for inline styles and SVG. `varNames.accent` is `--lv-accent`, for reading the current value. Canvas code reads the value and redraws when the theme changes.
 
+`Field` labels a `TextInput`, `TextArea` or `Select` inside it and ties its hint and error to it. The control always takes the field's id, and any `id` set on it is ignored; to choose the id, set it on `Field` (`<Field id="lens-name" label="Name">`). Outside a `Field`, a control keeps its own `id`. For any other control, pass a function as its children: it gets `{ id, describedBy }` to put on the control.
+
+`Link` and `Button` with `href` open every absolute `http` or `https` URL (including `//host/...`) in a new tab, and every other link in the same tab. Link to pages on the same site with relative paths (`/lenses`), never full URLs, so they stay in the tab.
+
 Links inside a site go through its router. `Link` is a plain `<a>`; wrap the router's own link with `className={linkClassName}` to get the same look.
 
 ## How it ships

@@ -1,5 +1,5 @@
 import { jsx, jsxs } from "react/jsx-runtime";
-import { useEffect, useId, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 // src/theme/theme.ts
 var tokenNames = [
 	"bg",
@@ -48,7 +48,7 @@ function mapTokens(value) {
 	return record;
 }
 // src/theme/theme-css.ts
-var unsafeInCss = /[;{}<>]/;
+var unsafeInCss = /[;{}<>\\]|\/\*|\*\//;
 function declarations(tokens, scheme, indent) {
 	const lines = tokenNames.map((name) => {
 		const value = tokens[name];
@@ -77,6 +77,11 @@ var Button_module_default = {
 function cx(...names) {
 	return names.filter(Boolean).join(" ");
 }
+// src/components/is-external-href.ts
+var webUrl = /^(?:https?:)?\/\//i;
+function isExternalHref(href) {
+	return webUrl.test(href);
+}
 // src/components/Button.tsx
 var variantClass = {
 	normal: void 0,
@@ -84,20 +89,34 @@ var variantClass = {
 	icon: Button_module_default.icon,
 	inline: Button_module_default.inline
 };
-function Button({ variant = "normal", href, className, children, ...rest }) {
-	const classes = cx(Button_module_default.button, variantClass[variant], className);
-	if (href !== void 0) return /* @__PURE__ */ jsx("a", {
-		href,
-		target: "_blank",
-		rel: "noreferrer",
-		className: classes,
-		"aria-label": rest["aria-label"],
-		title: rest.title,
-		children
-	});
+function Button(props) {
+	if (props.href !== void 0) {
+		const { variant = "normal", href, disabled = false, className, children, ...rest } = props;
+		const classes = cx(Button_module_default.button, variantClass[variant], className);
+		if (disabled) return /* @__PURE__ */ jsx("span", {
+			role: "link",
+			"aria-disabled": "true",
+			className: classes,
+			"aria-label": rest["aria-label"],
+			title: rest.title,
+			id: rest.id,
+			children
+		});
+		return /* @__PURE__ */ jsx("a", {
+			href,
+			className: classes,
+			...isExternalHref(href) ? {
+				target: "_blank",
+				rel: "noreferrer"
+			} : {},
+			...rest,
+			children
+		});
+	}
+	const { variant = "normal", className, children, ...rest } = props;
 	return /* @__PURE__ */ jsx("button", {
 		type: "button",
-		className: classes,
+		className: cx(Button_module_default.button, variantClass[variant], className),
 		...rest,
 		children
 	});
@@ -125,7 +144,7 @@ var headingTags = {
 };
 function Card({ media, eyebrow, heading, headingLevel = 2, description, actions, footer, className, children }) {
 	const Heading = headingTags[headingLevel];
-	const hasHead = hasContent(heading) || hasContent(eyebrow) || hasContent(actions);
+	const hasHead = hasContent(heading) || hasContent(eyebrow) || hasContent(description) || hasContent(actions);
 	return /* @__PURE__ */ jsxs("section", {
 		className: cx(text_module_default.text, Card_module_default.card, className),
 		children: [
@@ -184,9 +203,6 @@ var Details_module_default = {
 };
 // src/components/Link.tsx
 var linkClassName = { link: "lv-Link-link" }.link ?? "";
-function isExternalHref(href) {
-	return /^[a-z][a-z0-9+.-]*:/i.test(href);
-}
 function Link({ href, className, children, ...rest }) {
 	const external = isExternalHref(href);
 	return /* @__PURE__ */ jsx("a", {
@@ -210,6 +226,19 @@ function Details({ summary, children }) {
 		}), children]
 	});
 }
+// src/components/field-control.ts
+var FieldControlContext = createContext(void 0);
+function joinIds(...lists) {
+	const ids = new Set(lists.flatMap((list) => list?.split(/\s+/).filter(Boolean) ?? []));
+	return ids.size > 0 ? [...ids].join(" ") : void 0;
+}
+function useFieldControlIds({ id, "aria-describedby": describedBy }) {
+	const field = useContext(FieldControlContext);
+	return {
+		id: field?.id ?? id,
+		"aria-describedby": joinIds(field?.describedBy, describedBy)
+	};
+}
 var Field_module_default = {
 	field: "lv-Field-field",
 	label: "lv-Field-label",
@@ -217,13 +246,18 @@ var Field_module_default = {
 	error: "lv-Field-error"
 };
 // src/components/Field.tsx
-function Field({ label, hint, error, className, children }) {
-	const id = useId();
+function Field({ id: givenId, label, hint, error, className, children }) {
+	const generatedId = useId();
+	const id = givenId ?? generatedId;
 	const hintId = `${id}-hint`;
 	const errorId = `${id}-error`;
 	const hasHint = hasContent(hint);
 	const hasError = hasContent(error);
 	const describedBy = cx(hasHint && hintId, hasError && errorId) || void 0;
+	const ids = useMemo(() => ({
+		id,
+		describedBy
+	}), [id, describedBy]);
 	return /* @__PURE__ */ jsxs("div", {
 		className: cx(text_module_default.text, Field_module_default.field, className),
 		children: [
@@ -237,10 +271,10 @@ function Field({ label, hint, error, className, children }) {
 				className: Field_module_default.hint,
 				children: hint
 			}),
-			typeof children === "function" ? children({
-				id,
-				describedBy
-			}) : children,
+			/* @__PURE__ */ jsx(FieldControlContext.Provider, {
+				value: ids,
+				children: typeof children === "function" ? children(ids) : children
+			}),
 			hasError && /* @__PURE__ */ jsx("span", {
 				id: errorId,
 				className: Field_module_default.error,
@@ -250,20 +284,64 @@ function Field({ label, hint, error, className, children }) {
 		]
 	});
 }
+// src/components/accepts-file.ts
+function acceptsFile(accept, file) {
+	const patterns = (accept ?? "").split(",").map((pattern) => pattern.trim().toLowerCase()).filter(Boolean);
+	if (patterns.length === 0) return true;
+	const name = file.name.toLowerCase();
+	const type = file.type.toLowerCase();
+	return patterns.some((pattern) => {
+		if (pattern.startsWith(".")) return name.endsWith(pattern);
+		if (pattern.endsWith("/*")) return type.startsWith(pattern.slice(0, -1));
+		return type === pattern;
+	});
+}
 var FilePicker_module_default = {
 	picker: "lv-FilePicker-picker",
 	dragging: "lv-FilePicker-dragging",
 	input: "lv-FilePicker-input",
 	hint: "lv-FilePicker-hint",
+	error: "lv-FilePicker-error",
 	file: "lv-FilePicker-file"
 };
-// src/components/FilePicker.tsx
-function formatFileSize(sizeBytes) {
-	return `${(sizeBytes / 1024).toFixed(2)} KB`;
+// src/components/format-file-size.ts
+var units = [
+	{
+		unit: "gigabyte",
+		sizeBytes: 1e9
+	},
+	{
+		unit: "megabyte",
+		sizeBytes: 1e6
+	},
+	{
+		unit: "kilobyte",
+		sizeBytes: 1e3
+	}
+];
+function formatFileSize(sizeBytes, locale) {
+	const match = units.find(({ sizeBytes: unitBytes }) => sizeBytes >= unitBytes);
+	if (!match) return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(sizeBytes)} B`;
+	return new Intl.NumberFormat(locale, {
+		style: "unit",
+		unit: match.unit,
+		unitDisplay: "short",
+		maximumFractionDigits: 1
+	}).format(sizeBytes / match.sizeBytes);
 }
+// src/components/FilePicker.tsx
 function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint }) {
 	const inputRef = useRef(null);
 	const [dragging, setDragging] = useState(false);
+	const [rejection, setRejection] = useState();
+	const choose = (chosen) => {
+		if (chosen && !acceptsFile(accept, chosen)) {
+			setRejection(`${chosen.name} isn't a file this takes. It takes ${accept ?? ""}.`);
+			return;
+		}
+		setRejection(void 0);
+		onChange(chosen);
+	};
 	return /* @__PURE__ */ jsxs("div", {
 		role: "group",
 		"aria-label": buttonText,
@@ -272,14 +350,16 @@ function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint
 			event.preventDefault();
 			setDragging(true);
 		},
-		onDragLeave: () => {
+		onDragLeave: (event) => {
+			const { relatedTarget } = event;
+			if (relatedTarget instanceof Node && event.currentTarget.contains(relatedTarget)) return;
 			setDragging(false);
 		},
 		onDrop: (event) => {
 			event.preventDefault();
 			setDragging(false);
 			const dropped = event.dataTransfer.files[0];
-			if (dropped) onChange(dropped);
+			if (dropped) choose(dropped);
 		},
 		children: [
 			/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx(Button, {
@@ -294,13 +374,18 @@ function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint
 				tabIndex: -1,
 				"aria-hidden": true,
 				onChange: (event) => {
-					onChange(event.target.files?.[0]);
+					choose(event.target.files?.[0]);
 					event.target.value = "";
 				}
 			})] }),
 			hasContent(hint) && /* @__PURE__ */ jsx("span", {
 				className: FilePicker_module_default.hint,
 				children: hint
+			}),
+			rejection !== void 0 && /* @__PURE__ */ jsx("span", {
+				className: FilePicker_module_default.error,
+				role: "alert",
+				children: rejection
 			}),
 			file && /* @__PURE__ */ jsxs("div", {
 				className: FilePicker_module_default.file,
@@ -315,7 +400,7 @@ function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint
 					variant: "inline",
 					"aria-label": `Remove ${file.name}`,
 					onClick: () => {
-						onChange(void 0);
+						choose(void 0);
 					},
 					children: "×"
 				})]
@@ -437,9 +522,11 @@ var input_module_default = {
 };
 // src/components/Select.tsx
 function Select({ options, className, ...rest }) {
+	const ids = useFieldControlIds(rest);
 	return /* @__PURE__ */ jsx("select", {
 		className: cx(input_module_default.input, className),
 		...rest,
+		...ids,
 		children: options.map((option) => /* @__PURE__ */ jsx("option", {
 			value: option.value,
 			children: option.label
@@ -497,16 +584,20 @@ function Table({ items, rowKey, columns, caption, className }) {
 }
 // src/components/TextArea.tsx
 function TextArea({ className, ...rest }) {
+	const ids = useFieldControlIds(rest);
 	return /* @__PURE__ */ jsx("textarea", {
 		className: cx(input_module_default.input, input_module_default.multiline, className),
-		...rest
+		...rest,
+		...ids
 	});
 }
 // src/components/TextInput.tsx
 function TextInput({ className, ...rest }) {
+	const ids = useFieldControlIds(rest);
 	return /* @__PURE__ */ jsx("input", {
 		className: cx(input_module_default.input, className),
-		...rest
+		...rest,
+		...ids
 	});
 }
 var Tip_module_default = { tip: "lv-Tip-tip" };

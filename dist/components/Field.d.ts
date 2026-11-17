@@ -1,13 +1,11 @@
 import { type ReactNode } from "react";
-export interface FieldControlIds {
-    id: string;
-    describedBy: string | undefined;
-}
+import { type FieldControlIds } from "./field-control.js";
 export interface FieldProps {
+    id?: string;
     label?: ReactNode;
     hint?: ReactNode;
     error?: ReactNode;
     className?: string;
     children: ReactNode | ((ids: FieldControlIds) => ReactNode);
 }
-export declare function Field({ label, hint, error, className, children }: FieldProps): import("react").JSX.Element;
+export declare function Field({ id: givenId, label, hint, error, className, children }: FieldProps): import("react").JSX.Element;

@@ -1,5 +1,6 @@
 import type { SelectHTMLAttributes } from "react";
 import { cx } from "./cx.js";
+import { useFieldControlIds } from "./field-control.js";
 import s from "./input.module.css";
 
 export interface SelectOption {
@@ -12,8 +13,9 @@ export type SelectProps = {
 } & SelectHTMLAttributes<HTMLSelectElement>;
 
 export function Select({ options, className, ...rest }: SelectProps) {
+  const ids = useFieldControlIds(rest);
   return (
-    <select className={cx(s.input, className)} {...rest}>
+    <select className={cx(s.input, className)} {...rest} {...ids}>
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}

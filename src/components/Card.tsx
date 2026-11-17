@@ -30,7 +30,8 @@ export function Card({
   children,
 }: CardProps) {
   const Heading = headingTags[headingLevel];
-  const hasHead = hasContent(heading) || hasContent(eyebrow) || hasContent(actions);
+  const hasHead =
+    hasContent(heading) || hasContent(eyebrow) || hasContent(description) || hasContent(actions);
   return (
     <section className={cx(t.text, s.card, className)}>
       {hasContent(media) && <div className={s.media}>{media}</div>}
