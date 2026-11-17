@@ -35,3 +35,24 @@ jobs:
             echo "dist/ is out of date: run pnpm build and commit it."
             exit 1
           fi
+
+  release-tag:
+    name: Tag the release
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Tag and release the version in package.json if it's new
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if git ls-remote --exit-code --tags origin "refs/tags/$version" >/dev/null; then
+            echo "$version is already tagged."
+            exit 0
+          fi
+          gh release create "$version" --target "$GITHUB_SHA" --title "$version" --generate-notes

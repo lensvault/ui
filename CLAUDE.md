@@ -20,7 +20,7 @@ Work goes into `main` only through pull requests, and Ted's merge is the go.
 - Commit in small steps; imperative subject, body says why. Run `pnpm check` before every commit.
 - End every commit message with `Co-Authored-By: Ted Barrett <21516680+Ted-Barrett@users.noreply.github.com>`, alongside Claude's own lines.
 - `dist/` is committed, because sites install from a git tag (see `README.md`). Run `pnpm build` and commit `dist/` with the source change; CI fails if they differ.
-- A release is a version bump in `package.json`, built and committed and merged through a pull request, then a tag `vX.Y.Z` on `main`. Ted creates the tag on GitHub's Releases page (<https://github.com/lensvault/ui/releases/new>), because pushing tags from Claude's cloud sessions fails; give him the steps. Sites move to it by changing the tag they install.
+- A release is a version bump in `package.json`, built and committed and merged through a pull request. When `main`'s check passes, the workflow tags that commit `vX.Y.Z` and makes a GitHub release, if the tag doesn't exist yet. Claude's cloud sessions can't push tags (their git proxy refuses any push that isn't a branch), which is why the workflow does it. Sites move to a release by changing the tag they install.
 - Dependabot opens one grouped pull request a week for minor and patch updates. Its 7-day cooldown matches `minimumReleaseAge` in `pnpm-workspace.yaml`; keep the two in step, and don't add a version newer than 7 days.
 
 ## Commands
