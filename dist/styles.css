@@ -19,7 +19,8 @@
   border-color: var(--lv-muted);
 }
 
-.lv-Button-button:disabled {
+.lv-Button-button:disabled,
+.lv-Button-button[aria-disabled="true"] {
   opacity: 0.5;
   cursor: default;
 }

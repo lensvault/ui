@@ -1,8 +1,16 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 export type ButtonVariant = "normal" | "primary" | "icon" | "inline";
-export type ButtonProps = {
+interface ButtonLookProps {
     variant?: ButtonVariant;
-    href?: string;
     children?: ReactNode;
+}
+type ButtonAsButtonProps = ButtonLookProps & {
+    href?: undefined;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
-export declare function Button({ variant, href, className, children, ...rest }: ButtonProps): import("react").JSX.Element;
+type ButtonAsLinkProps = ButtonLookProps & {
+    href: string;
+    disabled?: boolean;
+} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
+export type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
+export declare function Button(props: ButtonProps): import("react").JSX.Element;
+export {};

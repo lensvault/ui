@@ -77,6 +77,17 @@ var Button_module_default = {
 function cx(...names) {
 	return names.filter(Boolean).join(" ");
 }
+// src/components/is-external-href.ts
+var absoluteUrl = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+var webProtocols = /* @__PURE__ */ new Set(["http:", "https:"]);
+function isExternalHref(href) {
+	if (!absoluteUrl.test(href)) return false;
+	const pageOrigin = typeof window === "undefined" ? void 0 : window.location.origin;
+	const base = pageOrigin ?? "https://page.invalid";
+	if (!URL.canParse(href, base)) return false;
+	const url = new URL(href, base);
+	return webProtocols.has(url.protocol) && url.origin !== pageOrigin;
+}
 // src/components/Button.tsx
 var variantClass = {
 	normal: void 0,
@@ -84,20 +95,34 @@ var variantClass = {
 	icon: Button_module_default.icon,
 	inline: Button_module_default.inline
 };
-function Button({ variant = "normal", href, className, children, ...rest }) {
-	const classes = cx(Button_module_default.button, variantClass[variant], className);
-	if (href !== void 0) return /* @__PURE__ */ jsx("a", {
-		href,
-		target: "_blank",
-		rel: "noreferrer",
-		className: classes,
-		"aria-label": rest["aria-label"],
-		title: rest.title,
-		children
-	});
+function Button(props) {
+	if (props.href !== void 0) {
+		const { variant = "normal", href, disabled = false, className, children, ...rest } = props;
+		const classes = cx(Button_module_default.button, variantClass[variant], className);
+		if (disabled) return /* @__PURE__ */ jsx("span", {
+			role: "link",
+			"aria-disabled": "true",
+			className: classes,
+			"aria-label": rest["aria-label"],
+			title: rest.title,
+			id: rest.id,
+			children
+		});
+		return /* @__PURE__ */ jsx("a", {
+			href,
+			className: classes,
+			...isExternalHref(href) ? {
+				target: "_blank",
+				rel: "noreferrer"
+			} : {},
+			...rest,
+			children
+		});
+	}
+	const { variant = "normal", className, children, ...rest } = props;
 	return /* @__PURE__ */ jsx("button", {
 		type: "button",
-		className: classes,
+		className: cx(Button_module_default.button, variantClass[variant], className),
 		...rest,
 		children
 	});
@@ -182,17 +207,6 @@ var Details_module_default = {
 	details: "lv-Details-details",
 	summary: "lv-Details-summary"
 };
-// src/components/is-external-href.ts
-var absoluteUrl = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-var webProtocols = /* @__PURE__ */ new Set(["http:", "https:"]);
-function isExternalHref(href) {
-	if (!absoluteUrl.test(href)) return false;
-	const pageOrigin = typeof window === "undefined" ? void 0 : window.location.origin;
-	const base = pageOrigin ?? "https://page.invalid";
-	if (!URL.canParse(href, base)) return false;
-	const url = new URL(href, base);
-	return webProtocols.has(url.protocol) && url.origin !== pageOrigin;
-}
 // src/components/Link.tsx
 var linkClassName = { link: "lv-Link-link" }.link ?? "";
 function Link({ href, className, children, ...rest }) {
