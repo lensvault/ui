@@ -60,6 +60,6 @@ Links inside a site go through its router. `Link` is a plain `<a>`; wrap the rou
 
 ## How it ships
 
-The built package (`dist/`: JavaScript, type declarations and `styles.css`) is committed. pnpm 10 won't run a git dependency's build script unless every site adds it to `onlyBuiltDependencies`, and building on install would also pull in all the dev tools. CI fails if `dist/` doesn't match a fresh build, so run `pnpm build` and commit `dist/` with each change.
+The built package (`dist/`: JavaScript, type declarations and `styles.css`) is committed. pnpm 10 won't run a git dependency's build script unless every site adds it to `onlyBuiltDependencies`, and building on install would also pull in all the dev tools. CI fails if `dist/` doesn't match a fresh build, so run `pnpm bundle` and commit `dist/` with each change. The script is deliberately not called `build`, because npm prepares (installs the dev tools of) any git dependency with a `build`, `prepare` or install script.
 
 AI assistants: read [`CLAUDE.md`](CLAUDE.md) first.

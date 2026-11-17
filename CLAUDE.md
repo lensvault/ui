@@ -19,7 +19,7 @@ Work goes into `main` only through pull requests, and Ted's merge is the go.
 - Keep each pull request to one piece of work. After another one merges, merge `main` into your branch rather than rebasing it.
 - Commit in small steps; imperative subject, body says why. Run `pnpm check` before every commit.
 - End every commit message with `Co-Authored-By: Ted Barrett <21516680+Ted-Barrett@users.noreply.github.com>`, alongside Claude's own lines.
-- `dist/` is committed, because sites install from a git tag (see `README.md`). Run `pnpm build` and commit `dist/` with the source change; CI fails if they differ.
+- `dist/` is committed, because sites install from a git tag (see `README.md`). Run `pnpm bundle` and commit `dist/` with the source change; CI fails if they differ. The script is not named `build`: npm prepares a git dependency that has a `build`, `prepare` or install script by installing all its dev tools, which is slow and broke tedbarrett.me's CI on Node 20.
 - A release is a version bump in `package.json`, built and committed and merged through a pull request. When `main`'s check passes, the workflow tags that commit `vX.Y.Z` and makes a GitHub release, if the tag doesn't exist yet. Claude's cloud sessions can't push tags (their git proxy refuses any push that isn't a branch), which is why the workflow does it. Sites move to a release by changing the tag they install.
 - Dependabot opens one grouped pull request a week for minor and patch updates. Its 7-day cooldown matches `minimumReleaseAge` in `pnpm-workspace.yaml`; keep the two in step, and don't add a version newer than 7 days.
 
@@ -30,7 +30,7 @@ Node 24 (`.nvmrc`) and pnpm 10.28.0 (`packageManager`; run `corepack enable` onc
 - `pnpm install`: install everything.
 - `pnpm check`: Prettier check, Stylelint, ESLint, typecheck, knip, unit tests, then the build. Run before every commit.
 - `pnpm test`: unit tests only (Vitest, jsdom, Testing Library).
-- `pnpm build`: write `dist/` (Vite for the JavaScript and `styles.css`, `tsc` for the types).
+- `pnpm bundle`: write `dist/` (Vite for the JavaScript and `styles.css`, `tsc` for the types).
 - `pnpm format`: fix formatting.
 
 Linting is strict and warnings fail. Fix the code rather than switching a rule off; if a rule is truly wrong for a case, disable it on that line with the reason.

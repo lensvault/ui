@@ -32,7 +32,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain -- dist)" ]; then
             git status --short -- dist
-            echo "dist/ is out of date: run pnpm build and commit it."
+            echo "dist/ is out of date: run pnpm bundle and commit it."
             exit 1
           fi
 
