@@ -1,0 +1,33 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lv-gap-s);
+  padding: var(--lv-gap-m);
+  border: 1px dashed var(--lv-line);
+}
+
+.dragging {
+  border-color: var(--lv-selected);
+}
+
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.hint {
+  color: var(--lv-muted);
+  font-size: 13px;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lv-gap-s);
+  padding: var(--lv-gap-s) var(--lv-gap-m);
+  border: 1px solid var(--lv-line);
+  background: var(--lv-bg);
+}

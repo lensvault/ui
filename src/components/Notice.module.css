@@ -1,0 +1,10 @@
+.notice {
+  padding: var(--lv-gap-s) var(--lv-gap-m);
+  border: 1px solid var(--lv-line);
+  border-left: 3px solid var(--lv-muted);
+  background: var(--lv-raised);
+}
+
+.error {
+  border-left-color: var(--lv-bad);
+}

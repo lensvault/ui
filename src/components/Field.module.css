@@ -1,0 +1,19 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lv-gap-xs);
+}
+
+.label {
+  font-weight: 600;
+}
+
+.hint {
+  color: var(--lv-muted);
+  font-size: 13px;
+}
+
+.error {
+  color: var(--lv-bad);
+  font-size: 13px;
+}

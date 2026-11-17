@@ -1,0 +1,26 @@
+.wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.panel {
+  position: fixed;
+  z-index: 50;
+  box-sizing: border-box;
+  width: max-content;
+  padding: var(--lv-gap-s) var(--lv-gap-m);
+  border: 1px solid var(--lv-line);
+  border-radius: var(--lv-radius);
+  background: var(--lv-raised);
+  box-shadow: var(--lv-shadow);
+  font-size: 14px;
+}

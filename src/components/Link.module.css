@@ -1,0 +1,17 @@
+.link {
+  color: var(--lv-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--lv-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  color: var(--lv-accent);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--lv-selected);
+  outline-offset: 2px;
+}

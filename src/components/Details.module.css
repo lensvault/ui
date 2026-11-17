@@ -1,0 +1,7 @@
+.details[open] > summary {
+  margin-bottom: var(--lv-gap-s);
+}
+
+.summary {
+  cursor: pointer;
+}

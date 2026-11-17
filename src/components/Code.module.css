@@ -1,0 +1,8 @@
+.code {
+  padding: 2px 6px;
+  border: 1px solid var(--lv-line);
+  border-radius: var(--lv-radius-small);
+  background: var(--lv-bg);
+  font-family: var(--lv-font-mono);
+  font-size: 14px;
+}

@@ -1,0 +1,23 @@
+.input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--lv-control-height);
+  padding: 6px 10px;
+  border: 1px solid var(--lv-line);
+  border-radius: var(--lv-radius-small);
+  background: var(--lv-bg);
+  color: var(--lv-ink);
+  font: inherit;
+}
+
+.input:focus {
+  border-color: var(--lv-selected);
+  outline: none;
+}
+
+.multiline {
+  min-height: 90px;
+  resize: vertical;
+  font-family: var(--lv-font-mono);
+  font-size: 13px;
+}
