@@ -17,6 +17,17 @@ describe("Link", () => {
     expect(link).not.toHaveAttribute("target");
   });
 
+  it("stays in the same tab for mail and phone links", () => {
+    render(
+      <>
+        <Link href="mailto:someone@example.com">Email</Link>
+        <Link href="tel:+61200000000">Call</Link>
+      </>,
+    );
+    expect(screen.getByRole("link", { name: "Email" })).not.toHaveAttribute("target");
+    expect(screen.getByRole("link", { name: "Call" })).not.toHaveAttribute("target");
+  });
+
   it("lets the caller choose the target", () => {
     render(
       <Link href="https://example.com/" target="_self">

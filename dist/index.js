@@ -182,11 +182,19 @@ var Details_module_default = {
 	details: "lv-Details-details",
 	summary: "lv-Details-summary"
 };
+// src/components/is-external-href.ts
+var absoluteUrl = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+var webProtocols = /* @__PURE__ */ new Set(["http:", "https:"]);
+function isExternalHref(href) {
+	if (!absoluteUrl.test(href)) return false;
+	const pageOrigin = typeof window === "undefined" ? void 0 : window.location.origin;
+	const base = pageOrigin ?? "https://page.invalid";
+	if (!URL.canParse(href, base)) return false;
+	const url = new URL(href, base);
+	return webProtocols.has(url.protocol) && url.origin !== pageOrigin;
+}
 // src/components/Link.tsx
 var linkClassName = { link: "lv-Link-link" }.link ?? "";
-function isExternalHref(href) {
-	return /^[a-z][a-z0-9+.-]*:/i.test(href);
-}
 function Link({ href, className, children, ...rest }) {
 	const external = isExternalHref(href);
 	return /* @__PURE__ */ jsx("a", {
