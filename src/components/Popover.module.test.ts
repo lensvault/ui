@@ -10,6 +10,10 @@ describe("Popover.module.css", () => {
     expect(button).toMatch(/font: inherit;/);
   });
 
+  it("keeps the 14px size after inheriting the font", () => {
+    expect(button.indexOf("font-size: 14px;")).toBeGreaterThan(button.indexOf("font: inherit;"));
+  });
+
   it("keeps a link's bold weight after inheriting the font", () => {
     expect(button.indexOf("font-weight: 700;")).toBeGreaterThan(button.indexOf("font: inherit;"));
   });
