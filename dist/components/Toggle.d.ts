@@ -4,5 +4,7 @@ export interface ToggleProps {
     onChange: (checked: boolean) => void;
     disabled?: boolean;
     children: ReactNode;
+    id?: string;
+    "aria-describedby"?: string;
 }
-export declare function Toggle({ checked, onChange, disabled, children }: ToggleProps): import("react").JSX.Element;
+export declare function Toggle({ checked, onChange, disabled, children, ...rest }: ToggleProps): import("react").JSX.Element;

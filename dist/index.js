@@ -611,7 +611,8 @@ function Tip({ tip, children }) {
 }
 var Toggle_module_default = { toggle: "lv-Toggle-toggle" };
 // src/components/Toggle.tsx
-function Toggle({ checked, onChange, disabled = false, children }) {
+function Toggle({ checked, onChange, disabled = false, children, ...rest }) {
+	const ids = useFieldControlIds(rest);
 	return /* @__PURE__ */ jsxs("label", {
 		className: cx(text_module_default.text, Toggle_module_default.toggle),
 		children: [/* @__PURE__ */ jsx("input", {
@@ -619,6 +620,7 @@ function Toggle({ checked, onChange, disabled = false, children }) {
 			role: "switch",
 			checked,
 			disabled,
+			...ids,
 			onChange: (event) => {
 				onChange(event.target.checked);
 			}
