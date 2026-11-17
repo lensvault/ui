@@ -4,19 +4,23 @@
 
 ## Asking and confirming
 
-- Get Ted's go before starting a new piece of work. Agreeing on a design isn't a go.
+- Get Ted's go on a plan for each piece of work. Work in an agreed plan then starts without a further go; anything outside it needs one. Agreeing on a design isn't a go.
 - Ask before a big architecture decision or a new runtime dependency. The package has none: `react` and `react-dom` are peer dependencies (`^18.3.0 || ^19.0.0`, because tedbarrett.me is on React 18).
 - Don't rewrite Ted's own wording unless asked.
-- **Never delete a remote branch** without Ted's explicit written approval naming that branch.
+- **Never delete a remote branch** without Ted's explicit written approval naming that branch. GitHub deletes a pull request's branch when Ted merges it; that merge is his approval for that branch only.
 - Open work goes in `TODO.md`. Nothing on it starts without Ted's go. Remove an item in the commit that finishes it.
 
 ## Git and releases
 
-- Commit when a piece of work is done; small commits, imperative subject, body says why.
+Work goes into `main` only through pull requests, and Ted's merge is the go.
+
+- Work on a branch named `claude/<topic>`, one per piece of work. Push it after every commit, so nothing lives only in a container. No go is needed to push a branch.
+- Open every pull request as a **draft**. GitHub won't merge a draft, and Ted doesn't merge drafts. Review it with `/code-review`, fix what it finds, and check CI passes; only then mark it ready for review and tell Ted it's ready, with a link and what to look at on screen. Anything not a draft is Ted's to review and merge. Never push to `main` and never merge a pull request yourself, unless Ted asks you to merge one by its number.
+- Keep each pull request to one piece of work. After another one merges, merge `main` into your branch rather than rebasing it.
+- Commit in small steps; imperative subject, body says why. Run `pnpm check` before every commit.
 - End every commit message with `Co-Authored-By: Ted Barrett <21516680+Ted-Barrett@users.noreply.github.com>`, alongside Claude's own lines.
-- Push only with Ted's go, and only when `pnpm check` passes.
 - `dist/` is committed, because sites install from a git tag (see `README.md`). Run `pnpm build` and commit `dist/` with the source change; CI fails if they differ.
-- A release is a version bump in `package.json`, built and committed, then a tag `vX.Y.Z` on `main`. Sites move to it by changing the tag they install.
+- A release is a version bump in `package.json`, built and committed and merged through a pull request, then a tag `vX.Y.Z` on `main`. Sites move to it by changing the tag they install.
 - Dependabot opens one grouped pull request a week for minor and patch updates. Its 7-day cooldown matches `minimumReleaseAge` in `pnpm-workspace.yaml`; keep the two in step, and don't add a version newer than 7 days.
 
 ## Commands
