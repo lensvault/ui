@@ -1,0 +1,48 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lv-gap-xs);
+  min-height: var(--lv-control-height);
+  padding: 0 14px;
+  border: 1px solid var(--lv-line);
+  border-radius: var(--lv-radius-small);
+  background: var(--lv-raised);
+  color: var(--lv-ink);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  border-color: var(--lv-muted);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--lv-selected);
+  outline-offset: 2px;
+}
+
+.primary {
+  border-color: var(--lv-accent);
+  background: var(--lv-accent);
+  color: var(--lv-accent-ink);
+}
+
+.icon {
+  min-width: var(--lv-control-height);
+  padding: 0;
+}
+
+.inline {
+  min-height: 0;
+  padding: 2px 4px;
+  border-color: transparent;
+  background: none;
+}

@@ -1,0 +1,26 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.gapXs {
+  gap: var(--lv-gap-xs);
+}
+
+.gapS {
+  gap: var(--lv-gap-s);
+}
+
+.gapM {
+  gap: var(--lv-gap-m);
+}
+
+.gapL {
+  gap: var(--lv-gap-l);
+}
