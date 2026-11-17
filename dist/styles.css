@@ -132,7 +132,7 @@
 }
 .lv-Columns-columns {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--columns-min, 260px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--columns-min, 260px), 100%), 1fr));
   gap: var(--lv-gap-m);
 }
 .lv-Details-details[open] > summary {
