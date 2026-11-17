@@ -1,6 +1,6 @@
 import { cssVariableName, tokenNames, type Theme, type TokenName, type Tokens } from "./theme.js";
 
-const unsafeInCss = /[;{}<>]/;
+const unsafeInCss = /[;{}<>\\]|\/\*|\*\//;
 
 function declarations(tokens: Tokens, scheme: "light" | "dark", indent: string): string {
   const lines = tokenNames.map((name: TokenName) => {

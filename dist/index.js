@@ -48,7 +48,7 @@ function mapTokens(value) {
 	return record;
 }
 // src/theme/theme-css.ts
-var unsafeInCss = /[;{}<>]/;
+var unsafeInCss = /[;{}<>\\]|\/\*|\*\//;
 function declarations(tokens, scheme, indent) {
 	const lines = tokenNames.map((name) => {
 		const value = tokens[name];

@@ -72,6 +72,14 @@ describe("themeCss", () => {
     expect(() => themeCss(broken)).toThrow('Theme token "bg" (dark)');
   });
 
+  it.each(["red /* x", "red */", "\\7d red", "url(a\\)"])("refuses %s", (value) => {
+    const broken = defineTheme({
+      light: { ...testTheme.light, line: value },
+      dark: testTheme.dark,
+    });
+    expect(() => themeCss(broken)).toThrow('Theme token "line" (light)');
+  });
+
   it("refuses an empty value", () => {
     const empty = defineTheme({ light: { ...testTheme.light, ink: " " }, dark: testTheme.dark });
     expect(() => themeCss(empty)).toThrow('Theme token "ink" (light)');
