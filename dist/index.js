@@ -78,15 +78,9 @@ function cx(...names) {
 	return names.filter(Boolean).join(" ");
 }
 // src/components/is-external-href.ts
-var absoluteUrl = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-var webProtocols = /* @__PURE__ */ new Set(["http:", "https:"]);
+var webUrl = /^(?:https?:)?\/\//i;
 function isExternalHref(href) {
-	if (!absoluteUrl.test(href)) return false;
-	const pageOrigin = typeof window === "undefined" ? void 0 : window.location.origin;
-	const base = pageOrigin ?? "https://page.invalid";
-	if (!URL.canParse(href, base)) return false;
-	const url = new URL(href, base);
-	return webProtocols.has(url.protocol) && url.origin !== pageOrigin;
+	return webUrl.test(href);
 }
 // src/components/Button.tsx
 var variantClass = {
@@ -241,7 +235,7 @@ function joinIds(...lists) {
 function useFieldControlIds({ id, "aria-describedby": describedBy }) {
 	const field = useContext(FieldControlContext);
 	return {
-		id: id ?? field?.id,
+		id: field?.id ?? id,
 		"aria-describedby": joinIds(field?.describedBy, describedBy)
 	};
 }
@@ -252,8 +246,9 @@ var Field_module_default = {
 	error: "lv-Field-error"
 };
 // src/components/Field.tsx
-function Field({ label, hint, error, className, children }) {
-	const id = useId();
+function Field({ id: givenId, label, hint, error, className, children }) {
+	const generatedId = useId();
+	const id = givenId ?? generatedId;
 	const hintId = `${id}-hint`;
 	const errorId = `${id}-error`;
 	const hasHint = hasContent(hint);
@@ -326,12 +321,13 @@ var units = [
 ];
 function formatFileSize(sizeBytes, locale) {
 	const match = units.find(({ sizeBytes: unitBytes }) => sizeBytes >= unitBytes);
+	if (!match) return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(sizeBytes)} B`;
 	return new Intl.NumberFormat(locale, {
 		style: "unit",
-		unit: match?.unit ?? "byte",
+		unit: match.unit,
 		unitDisplay: "short",
-		maximumFractionDigits: match ? 1 : 0
-	}).format(sizeBytes / (match?.sizeBytes ?? 1));
+		maximumFractionDigits: 1
+	}).format(sizeBytes / match.sizeBytes);
 }
 // src/components/FilePicker.tsx
 function FilePicker({ file, onChange, accept, buttonText = "Choose a file", hint }) {

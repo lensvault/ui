@@ -3,7 +3,8 @@ import { formatFileSize } from "./format-file-size.js";
 
 describe("formatFileSize", () => {
   it("picks the unit by size", () => {
-    expect(formatFileSize(512, "en-US")).toBe("512 byte");
+    expect(formatFileSize(0, "en-US")).toBe("0 B");
+    expect(formatFileSize(512, "en-US")).toBe("512 B");
     expect(formatFileSize(2048, "en-US")).toBe("2 kB");
     expect(formatFileSize(3_450_000, "en-US")).toBe("3.5 MB");
     expect(formatFileSize(12_300_000_000, "en-US")).toBe("12.3 GB");

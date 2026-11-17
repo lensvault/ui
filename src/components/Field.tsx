@@ -6,6 +6,7 @@ import s from "./Field.module.css";
 import t from "./text.module.css";
 
 export interface FieldProps {
+  id?: string;
   label?: ReactNode;
   hint?: ReactNode;
   error?: ReactNode;
@@ -13,8 +14,9 @@ export interface FieldProps {
   children: ReactNode | ((ids: FieldControlIds) => ReactNode);
 }
 
-export function Field({ label, hint, error, className, children }: FieldProps) {
-  const id = useId();
+export function Field({ id: givenId, label, hint, error, className, children }: FieldProps) {
+  const generatedId = useId();
+  const id = givenId ?? generatedId;
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
   const hasHint = hasContent(hint);

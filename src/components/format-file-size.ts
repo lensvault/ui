@@ -6,11 +6,14 @@ const units = [
 
 export function formatFileSize(sizeBytes: number, locale?: string): string {
   const match = units.find(({ sizeBytes: unitBytes }) => sizeBytes >= unitBytes);
+  if (!match) {
+    return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(sizeBytes)} B`;
+  }
   const format = new Intl.NumberFormat(locale, {
     style: "unit",
-    unit: match?.unit ?? "byte",
+    unit: match.unit,
     unitDisplay: "short",
-    maximumFractionDigits: match ? 1 : 0,
+    maximumFractionDigits: 1,
   });
-  return format.format(sizeBytes / (match?.sizeBytes ?? 1));
+  return format.format(sizeBytes / match.sizeBytes);
 }

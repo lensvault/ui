@@ -20,7 +20,7 @@ function joinIds(...lists: (string | undefined)[]): string | undefined {
 export function useFieldControlIds({ id, "aria-describedby": describedBy }: ControlIdProps) {
   const field = useContext(FieldControlContext);
   return {
-    id: id ?? field?.id,
+    id: field?.id ?? id,
     "aria-describedby": joinIds(field?.describedBy, describedBy),
   };
 }
