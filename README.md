@@ -52,6 +52,8 @@ It holds the theme tokens and the shared controls (Button, Card, Field, Table an
 
    `vars.accent` is `var(--lv-accent)`, for inline styles and SVG. `varNames.accent` is `--lv-accent`, for reading the current value. Canvas code reads the value and redraws when the theme changes.
 
+`Field` labels a `TextInput`, `TextArea` or `Select` inside it and ties its hint and error to it. For any other control, pass a function as its children: it gets `{ id, describedBy }` to put on the control.
+
 Links inside a site go through its router. `Link` is a plain `<a>`; wrap the router's own link with `className={linkClassName}` to get the same look.
 
 ## How it ships

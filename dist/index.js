@@ -1,5 +1,5 @@
 import { jsx, jsxs } from "react/jsx-runtime";
-import { useEffect, useId, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 // src/theme/theme.ts
 var tokenNames = [
 	"bg",
@@ -232,6 +232,19 @@ function Details({ summary, children }) {
 		}), children]
 	});
 }
+// src/components/field-control.ts
+var FieldControlContext = createContext(void 0);
+function joinIds(...lists) {
+	const ids = new Set(lists.flatMap((list) => list?.split(/\s+/).filter(Boolean) ?? []));
+	return ids.size > 0 ? [...ids].join(" ") : void 0;
+}
+function useFieldControlIds({ id, "aria-describedby": describedBy }) {
+	const field = useContext(FieldControlContext);
+	return {
+		id: id ?? field?.id,
+		"aria-describedby": joinIds(field?.describedBy, describedBy)
+	};
+}
 var Field_module_default = {
 	field: "lv-Field-field",
 	label: "lv-Field-label",
@@ -246,6 +259,10 @@ function Field({ label, hint, error, className, children }) {
 	const hasHint = hasContent(hint);
 	const hasError = hasContent(error);
 	const describedBy = cx(hasHint && hintId, hasError && errorId) || void 0;
+	const ids = useMemo(() => ({
+		id,
+		describedBy
+	}), [id, describedBy]);
 	return /* @__PURE__ */ jsxs("div", {
 		className: cx(text_module_default.text, Field_module_default.field, className),
 		children: [
@@ -259,10 +276,10 @@ function Field({ label, hint, error, className, children }) {
 				className: Field_module_default.hint,
 				children: hint
 			}),
-			typeof children === "function" ? children({
-				id,
-				describedBy
-			}) : children,
+			/* @__PURE__ */ jsx(FieldControlContext.Provider, {
+				value: ids,
+				children: typeof children === "function" ? children(ids) : children
+			}),
 			hasError && /* @__PURE__ */ jsx("span", {
 				id: errorId,
 				className: Field_module_default.error,
@@ -459,9 +476,11 @@ var input_module_default = {
 };
 // src/components/Select.tsx
 function Select({ options, className, ...rest }) {
+	const ids = useFieldControlIds(rest);
 	return /* @__PURE__ */ jsx("select", {
 		className: cx(input_module_default.input, className),
 		...rest,
+		...ids,
 		children: options.map((option) => /* @__PURE__ */ jsx("option", {
 			value: option.value,
 			children: option.label
@@ -519,16 +538,20 @@ function Table({ items, rowKey, columns, caption, className }) {
 }
 // src/components/TextArea.tsx
 function TextArea({ className, ...rest }) {
+	const ids = useFieldControlIds(rest);
 	return /* @__PURE__ */ jsx("textarea", {
 		className: cx(input_module_default.input, input_module_default.multiline, className),
-		...rest
+		...rest,
+		...ids
 	});
 }
 // src/components/TextInput.tsx
 function TextInput({ className, ...rest }) {
+	const ids = useFieldControlIds(rest);
 	return /* @__PURE__ */ jsx("input", {
 		className: cx(input_module_default.input, className),
-		...rest
+		...rest,
+		...ids
 	});
 }
 var Tip_module_default = { tip: "lv-Tip-tip" };

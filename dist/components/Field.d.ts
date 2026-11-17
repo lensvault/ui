@@ -1,8 +1,5 @@
 import { type ReactNode } from "react";
-export interface FieldControlIds {
-    id: string;
-    describedBy: string | undefined;
-}
+import { type FieldControlIds } from "./field-control.js";
 export interface FieldProps {
     label?: ReactNode;
     hint?: ReactNode;
