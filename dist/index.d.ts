@@ -15,6 +15,7 @@ export { Notice } from "./components/Notice.js";
 export { Popover } from "./components/Popover.js";
 export { Progress } from "./components/Progress.js";
 export { Select, type SelectOption, type SelectProps } from "./components/Select.js";
+export { Skeleton } from "./components/Skeleton.js";
 export { Spinner } from "./components/Spinner.js";
 export { Stack, type Gap, type StackProps } from "./components/Stack.js";
 export { Table, type TableColumn, type TableProps } from "./components/Table.js";
