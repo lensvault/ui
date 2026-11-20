@@ -533,6 +533,21 @@ function Select({ options, className, ...rest }) {
 		}, option.value))
 	});
 }
+var Skeleton_module_default = {
+	skeleton: "lv-Skeleton-skeleton",
+	shimmer: "lv-Skeleton-shimmer"
+};
+// src/components/Skeleton.tsx
+function Skeleton({ widthPercent = 100, heightPx }) {
+	return /* @__PURE__ */ jsx("span", {
+		className: Skeleton_module_default.skeleton,
+		"aria-hidden": "true",
+		style: {
+			width: `${String(widthPercent)}%`,
+			...heightPx === void 0 ? {} : { height: `${String(heightPx)}px` }
+		}
+	});
+}
 var Spinner_module_default = {
 	spinner: "lv-Spinner-spinner",
 	spin: "lv-Spinner-spin"
@@ -627,4 +642,4 @@ function Toggle({ checked, onChange, disabled = false, children, ...rest }) {
 		}), /* @__PURE__ */ jsx("span", { children })]
 	});
 }
-export { Button, Card, Code, Columns, Details, Field, FilePicker, KeyLabel, Link, Notice, Popover, Progress, Select, Spinner, Stack, Table, TextArea, TextInput, Tip, Toggle, cssVariableName, defineTheme, linkClassName, themeCss, tokenNames, varNames, vars };
+export { Button, Card, Code, Columns, Details, Field, FilePicker, KeyLabel, Link, Notice, Popover, Progress, Select, Skeleton, Spinner, Stack, Table, TextArea, TextInput, Tip, Toggle, cssVariableName, defineTheme, linkClassName, themeCss, tokenNames, varNames, vars };
